@@ -1,6 +1,8 @@
 from flask import request, render_template, redirect, json
 from Location import Location
 from Master import Master
+from Slot import Slot
+import time, threading
 
 from app import db
 from app import app
@@ -8,7 +10,6 @@ from app import app
 @app.route('/')
 def index():
     return render_template("index.html")
-
 
 @app.route('/addresses/')
 def booking():
@@ -21,8 +22,6 @@ def booking():
 def show_location_page(id: int):
 
     masters = db.session.query(Master).filter(Master.location_id == int(id)).all()
-    print(Master.query.all())
-    print(masters)
 
     return render_template('location.html', masters = masters)
 
@@ -53,6 +52,13 @@ def create_master():
 
             db.session.add(master)
             db.session.commit()
+
+            master_id = Master.query.all()[-1].id
+
+            slot = Slot(master_id = master_id, booked_by = None)
+
+            db.session.add(slot)
+
             return redirect('/addresses/')
         except:
             return "Возникла непредвиденная ошибка!"
@@ -83,6 +89,7 @@ def delete_master(id: int):
         return redirect('/addresses/')
     except:
         return 'При удалении  произошла ошибка!'
+    
 
 @app.route('/api/getaddresses/')
 def get():
@@ -92,3 +99,4 @@ def get():
     return json.jsonify(array)
 
 app.run(debug=True)
+
