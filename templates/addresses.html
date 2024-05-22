@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html lang="ru">
-    <head>
-        <title>Сервис бронирования</title>
-    </head>
-    <body>
-        <header>
-            {% include 'header.html' %} 
-        </header>
-        <main>
-            <div class = "addresses">
-                
-            </div>
-        </main>
-        <footer>
 
-        </footer>
-        
-    </body>
-    <script src="../static/js/index.js"></script>
+<head>
+    <title>Сервис бронирования</title>
+</head>
+<body>
+    <header>
+        {% include 'header.html' %} 
+    </header>
+    <main>
+        <div>
+            <p>Адреса</p>
+            <ul>
+                {% for location in locations %}
+                    <li><a href="/addresses/{{location.id}}/">{{ location.address }}</a> </li>
+                    
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
+    <footer>
+
+    </footer>
+</body>
+
+
+
 </html>

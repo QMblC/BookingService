@@ -1,7 +1,6 @@
-from flask import Flask, request, current_app, Response, render_template, redirect, json
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
+from flask import request, render_template, redirect, json
 from Location import Location
+from Master import Master
 
 from app import db
 from app import app
@@ -15,11 +14,20 @@ def index():
 def booking():
     array = []
     for i in Location.query.order_by(Location.address).all():
-        array.append(i.address)
-    return render_template("addresses.html", locations= array)
+        array.append(i)
+    return render_template("addresses.html", locations = array)
 
-@app.route('/create/', methods = ['POST', 'GET'])
-def create():
+@app.route('/addresses/<int:id>/')
+def show_location_page(id: int):
+
+    masters = db.session.query(Master).filter(Master.location_id == int(id)).all()
+    print(Master.query.all())
+    print(masters)
+
+    return render_template('location.html', masters = masters)
+
+@app.route('/create-location/', methods = ['POST', 'GET'])
+def create_location():
     if request.method == 'POST':
         address = request.form['address']
         location = Location(address = address)
@@ -32,6 +40,49 @@ def create():
             pass
     else:
         return render_template("location_form.html")
+
+@app.route('/create-master/', methods = ['GET', 'POST'])
+def create_master():
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        location_id = request.form['location_id']
+
+        try:
+            master = Master(first_name = first_name, last_name = last_name, location_id = location_id)
+
+            db.session.add(master)
+            db.session.commit()
+            return redirect('/addresses/')
+        except:
+            return "Возникла непредвиденная ошибка!"
+    else:
+        array = []
+        for i in Location.query.order_by(Location.address).all():
+            array.append(i)
+        return render_template("master_form.html", locations = array)
+    
+@app.route('/addresses/delete/<int:id>')
+def delete(id: int):
+    location = Location.query.get_or_404(id)
+
+    try:
+        db.session.delete(location)
+        db.session.commit()
+        return redirect('/addresses/')
+    except:
+        return 'При удалении  произошла ошибка!'
+    
+@app.route('/masters/delete/<int:id>')
+def delete_master(id: int):
+    masters = Master.query.get_or_404(id)
+
+    try:
+        db.session.delete(masters)
+        db.session.commit()
+        return redirect('/addresses/')
+    except:
+        return 'При удалении  произошла ошибка!'
 
 @app.route('/api/getaddresses/')
 def get():
