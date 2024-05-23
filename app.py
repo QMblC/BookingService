@@ -1,6 +1,6 @@
 from flask import Flask, request, current_app, Response, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
-
+import datetime
 import os
 from sqlalchemy.sql import func
 
@@ -12,7 +12,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICTATIONS'] = False
 
 
 db = SQLAlchemy(app)
-
 
 
 with app.app_context():
