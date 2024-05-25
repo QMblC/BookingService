@@ -8,8 +8,8 @@ import datetime
 from app import db
 from app import app
 
-#Сделать список на 2 недели
-#Отдавать только эти 2 недели
+#Автоматическое создание недели
+
 
 @app.route('/')
 def index():
@@ -47,7 +47,7 @@ def view_location_page(id: int):
     masters = []
 
     masters_people = db.session.query(Master).filter(Master.location_id == int(id)).all()
-    slots = []
+
     for i in range(len(masters_people)):
         person = masters_people[i]
 
@@ -209,5 +209,7 @@ def get():
         array.append((i.id, i.address))
     return json.jsonify(array)
 
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(port = 5000, debug=True)
+
 
